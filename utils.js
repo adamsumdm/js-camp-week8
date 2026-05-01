@@ -2,6 +2,7 @@
 // 工具函式
 // ========================================
 
+const { all } = require('axios');
 const dayjs = require('dayjs');
 
 /**
@@ -11,6 +12,10 @@ const dayjs = require('dayjs');
  */
 function getDiscountRate(product) {
   // 請實作此函式
+  // originalPrice vs. price
+  const discountRate = Math.round((product.price/product.originalPrice)*100);
+  const discountRateStr = (discountRate/10).toString();
+  return `${discountRateStr}折`;
 }
 
 /**
@@ -20,6 +25,9 @@ function getDiscountRate(product) {
  */
 function getAllCategories(products) {
   // 請實作此函式
+  const allCategories = products.map( product => product.category);
+  // return [...new Set(allCategories)];
+  return Array.from(new Set(allCategories));
 }
 
 /**
@@ -30,8 +38,8 @@ function getAllCategories(products) {
 function formatDate(timestamp) {
   // 請實作此函式
   // 提示：dayjs.unix...
+  return dayjs.unix(timestamp).format('YYYY/MM/DD HH/mm');
 }
-
 /**
  * 計算距今天數
  * @param {number} timestamp - Unix timestamp
@@ -43,6 +51,10 @@ function getDaysAgo(timestamp) {
   // 1. 用 dayjs() 取得今天
   // 2. 用 dayjs.unix(timestamp) 取得日期
   // 3. 用 .diff() 計算天數差異
+  const diffDaysFromToday = dayjs.unix(timestamp).diff(dayjs(),'day');
+  if(diffDaysFromToday>0) return `${diffDays}天後`;
+  if(diffDaysFromToday<0) return `${diffDays}天前`;
+  return '今天';
 }
 
 /**
@@ -59,6 +71,42 @@ function getDaysAgo(timestamp) {
  */
 function validateOrderUser(data) {
   // 請實作此函式
+  // 請實作此函式
+  let errorStringArray = [];
+  let isValid = true;
+
+ // 驗證規則：name: 不可為空
+ if(data.name.trim()=="") {
+  isValid = false;
+  errorStringArray.push("name: 不可為空");
+ }
+ // 驗證規則：tel: 必須是 09 開頭的 10 位數字
+ if(!/^09\d{8}/.test(data.tel)) {
+  isValid = false;
+  errorStringArray.push("tel: 必須是 09 開頭的 10 位數字");
+ }
+ // 驗證規則：email: 必須包含 @ 符號
+ if(!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(data.email)) {
+  isValid = false;
+  errorStringArray.push("email: 必須包含 @ 符號");
+ }
+ // 驗證規則：address: 不可為空
+ if(!/^\p{Script=Han}+$/u.test(data.address)) {
+  isValid = false;
+  errorStringArray.push("address: 不可為空");
+ }
+ // 驗證規則：payment: 必須是 'ATM', 'Credit Card', 'Apple Pay' 其中之一
+ if(!data.payment.trim()!=='') {
+  if(!(data.payment === 'ATM' || data.payment === 'Credit Card' || data.payment === 'Apple Pay')){
+    isValid = false;
+    errorStringArray.push("payment: 必須是 'ATM', 'Credit Card', 'Apple Pay' 其中之一");
+  }
+ }
+
+  return{
+    isValid: isValid,
+    errors: errorStringArray
+  };
 }
 
 /**
@@ -73,6 +121,22 @@ function validateOrderUser(data) {
  */
 function validateCartQuantity(quantity) {
   // 請實作此函式
+  const errString = [];
+  const isValid = Number.isInteger(quantity) && quantity > 0 && quantity < 100;
+
+  if(!isValid){
+    // 錯誤訊息堆疊：必須是正整數
+    if(!Number.isInteger(quantity)) errString.push('必須是正整數;');
+    // 錯誤訊息堆疊：不可小於 1
+    if(!quantity > 0) errString.push('不可小於 1;');
+    // 錯誤訊息堆疊：不可大於 99
+    if(!quantity < 100) errString.push('不可大於 99;');
+  }
+  
+  return {
+    isValid:isValid,
+    error:errString.toString()
+  };
 }
 
 /**
@@ -92,6 +156,8 @@ function validateCartQuantity(quantity) {
  */
 function formatCurrency(amount) {
   // 請實作此函式
+  const moneyFormatted = amount.toLocaleString('zh-TW');
+  return `NT$ ${moneyFormatted}`;
 }
 
 module.exports = {
