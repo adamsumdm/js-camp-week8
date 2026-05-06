@@ -11,11 +11,8 @@ const dayjs = require('dayjs');
  * @returns {string} - 例如 '8折'
  */
 function getDiscountRate(product) {
-  // 請實作此函式
-  // originalPrice vs. price
-  const discountRate = Math.round((product.price/product.originalPrice)*100);
-  const discountRateStr = (discountRate/10).toString();
-  return `${discountRateStr}折`;
+  const discountRate = Math.round((product.price / product.origin_price) * 10);
+  return `${discountRate}折`;
 }
 
 /**
@@ -38,7 +35,7 @@ function getAllCategories(products) {
 function formatDate(timestamp) {
   // 請實作此函式
   // 提示：dayjs.unix...
-  return dayjs.unix(timestamp).format('YYYY/MM/DD HH/mm');
+  return dayjs.unix(timestamp).format('YYYY/MM/DD HH:mm');
 }
 /**
  * 計算距今天數
@@ -51,12 +48,12 @@ function getDaysAgo(timestamp) {
   // 1. 用 dayjs() 取得今天
   // 2. 用 dayjs.unix(timestamp) 取得日期
   // 3. 用 .diff() 計算天數差異
-  const today = dayjs().startof('day');
+  const today = dayjs().startOf('day');
   const targetDay = dayjs.unix(timestamp).startOf('day');
   const diffDays = today.diff(targetDay,'day');
 
   if(diffDays === 0) return '今天';
-  return `${diffDays}天前`;
+  return `${diffDays}天`;
 
   
 }
