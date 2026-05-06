@@ -51,10 +51,14 @@ function getDaysAgo(timestamp) {
   // 1. 用 dayjs() 取得今天
   // 2. 用 dayjs.unix(timestamp) 取得日期
   // 3. 用 .diff() 計算天數差異
-  const diffDaysFromToday = dayjs.unix(timestamp).diff(dayjs(),'day');
-  if(diffDaysFromToday>0) return `${diffDays}天後`;
-  if(diffDaysFromToday<0) return `${diffDays}天前`;
-  return '今天';
+  const today = dayjs().startof('day');
+  const targetDay = dayjs.unix(timestamp).startOf('day');
+  const diffDays = today.diff(targetDay,'day');
+
+  if(diffDays === 0) return '今天';
+  return `${diffDays}天前`;
+
+  
 }
 
 /**

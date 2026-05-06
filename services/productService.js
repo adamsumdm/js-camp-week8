@@ -12,7 +12,12 @@ const { getDiscountRate, getAllCategories, formatCurrency } = require('../utils'
 async function getProducts() {
   // 請實作此函式
   // 提示：使用 fetchProducts() 取得產品陣列
+  const response = await fetchProducts();
   // 回傳格式：{ products, count: 產品數量 }
+  return {
+    products: response,
+    count: response.count
+  };
 }
 
 /**
